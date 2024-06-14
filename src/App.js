@@ -1,23 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect, useMemo, useCallback} from "react";
 
 function App() {
+
+  const [tarefas, setTarefas] = useState([
+  ])
+
+  const [input, setInput] = useState('')
+
+  useEffect(() => {
+    const tarefasStorage = localStorage.getItem('tarefas');
+
+    if(tarefasStorage){
+      setTarefas(JSON.parse(tarefasStorage))
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('tarefas', JSON.stringify(tarefas))
+  }, [tarefas])
+
+
+  const handleAdd = useCallback(() => {
+    setTarefas([...tarefas, input])
+    setInput('')
+  }, [input, tarefas])
+
+  const totalTarefas = useMemo(() => tarefas.length, [tarefas])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ul>
+        {tarefas.map(tarefa => (
+          <li key={tarefa}>{tarefa}</li>
+        ))}
+      </ul>
+      <br/>
+      <strong>Tarefas: {totalTarefas}</strong><br/>
+      <input type="text" value={input} onChange={(e) => setInput(e.target.value)}></input>
+      <button  type="button" onClick={handleAdd}>Add</button>
     </div>
   );
 }
